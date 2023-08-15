@@ -1,3 +1,15 @@
 {
-    "MODULE.hello": "hello"
+    "I18N.LANGUAGE": "English",
+    "pf2e-roll-stats": {
+        "module-settings": {
+            "enabled": {
+                "name": "Enable Module",
+                "hint": "Enables all functionality of module"
+            }
+        },
+        "debug-mode": {
+            "name": "Debug Mode",
+            "hint": "Have the console receive messages for different stuff"
+        }
+    }
 }
