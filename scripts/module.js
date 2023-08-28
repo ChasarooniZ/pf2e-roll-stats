@@ -7,8 +7,6 @@ Hooks.on("ready", async () => {
 })
 
 Hooks.on("createChatMessage", async function (msg, status, id) {
-    debugLog({ msg })
-    if (!msg.isDamageRoll || !game.user.isGM) return;
     const result = generateStat(msg);
     debugLog({ msg, result })
 })
