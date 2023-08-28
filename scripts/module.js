@@ -22,7 +22,7 @@ export function generateStat(msg) {
     res.type = context.type;
     res.outcome = context.outcome;
     res.rolls = msg.rolls.map(roll => {
-        result = {
+        let result = {
             total: roll.total,
             dice: roll.dice.map(die => (
                 {
