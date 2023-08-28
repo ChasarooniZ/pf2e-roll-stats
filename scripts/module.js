@@ -17,6 +17,7 @@ export function generateStat(msg) {
     const context = msg?.flags?.pf2e?.context;
     res.dc = context.dc;
     res.domains = (context?.domains ?? []).concat(context?.options?.filter(o => o.startsWith('action:')) ?? [])
+    res.token
     res.isReroll = context?.isReroll ?? false;
     res.traits = context?.traits.map(t => t.name);
     res.actor = context.actor;
