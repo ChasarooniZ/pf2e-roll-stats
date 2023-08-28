@@ -7,6 +7,7 @@ Hooks.on("ready", async () => {
 })
 
 Hooks.on("createChatMessage", async function (msg, status, id) {
+    if (!msg.rolls) return;
     const result = generateStat(msg);
     debugLog({ msg, result })
 })
