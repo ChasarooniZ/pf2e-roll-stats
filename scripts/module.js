@@ -17,11 +17,17 @@ export function generateStat(msg) {
     const context = msg?.flags?.pf2e?.context;
     res.dc = context.dc;
     res.domains = (context?.domains ?? []).concat(context?.options?.filter(o => o.startsWith('action:')) ?? [])
-    res.isReroll = context?.isReroll;
+    res.isReroll = context?.isReroll ?? false;
     res.traits = context?.traits.map(t => t.name);
     res.actor = context.actor;
     res.type = context.type;
     res.outcome = context.outcome;
+    res.secret = context?.secret || context.rollMode === 'gmroll';
+    res.rollMode;
+    res.user = msg?.user?.id;
+    res.timestamp = msg.timestamp;
+    
+    
     res.rolls = msg.rolls.map(roll => {
         let result = {
             total: roll.total,
