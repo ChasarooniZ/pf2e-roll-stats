@@ -5,11 +5,11 @@
             "enabled": {
                 "name": "Enable Module",
                 "hint": "Enables all functionality of module"
+            },
+            "debug-mode": {
+                "name": "Debug Mode",
+                "hint": "Have the console receive messages for different stuff"
             }
-        },
-        "debug-mode": {
-            "name": "Debug Mode",
-            "hint": "Have the console receive messages for different stuff"
         }
     }
 }
