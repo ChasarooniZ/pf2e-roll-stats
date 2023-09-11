@@ -1,14 +1,15 @@
 // import {generateDamageScroll, extractDamageInfoCombined, getTargetList} from './utility.js'
 // HOOKS STUFF
 Hooks.on("ready", async () => {
-    console.error("PF2e RPG Numbers is ready");
-    ui.notifications.notify("PF2e RPG Numbers is ready")
     //game.RPGNumbers = new RPGNumbers();
 })
 
 Hooks.on("createChatMessage", async function (msg, status, id) {
-    if (!msg.rolls) return;
+    if (!msg.rolls || !game.user.isGM) return;
     const result = generateStat(msg);
+    let all_rolls = game.user.getFlag('pf2e-roll-stats', 'rolls');
+    all_rolls.push(result)
+    game.user.setFlag('pf2e-roll-stats', 'rolls', result);
     debugLog({ msg, result })
 })
 
@@ -27,8 +28,8 @@ export function generateStat(msg) {
     res.rollMode;
     res.user = msg?.user?.id;
     res.timestamp = msg.timestamp;
-    
-    
+
+
     res.rolls = msg.rolls.map(roll => {
         let result = {
             total: roll.total,
@@ -110,4 +111,13 @@ export function extractTerm(term, flavor = '') {
 export function debugLog(data, context = "") {
     if (game.settings.get("pf2e-roll-stats", 'debug-mode'))
         console.log(`PF2E-Roll-Stats.${context}:`, data);
+}
+
+export function exportRollsAsJSON(rolls, name) {
+    saveDataToFile(JSON.stringify(rolls), "json", `${name}.json`);
+}
+
+game.pf2eRollStats.exportRolls = function (name) {
+    await exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), name);
+    game.user.unsetFlag('pf2e-roll-stats', 'rolls')
 }
