@@ -2,15 +2,19 @@
 // HOOKS STUFF
 Hooks.on("ready", async () => {
     //game.RPGNumbers = new RPGNumbers();
+    game.pf2eRollStats.exportRolls = function (name) {
+        await exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), name);
+        game.user.unsetFlag('pf2e-roll-stats', 'rolls')
+    }
 })
 
 Hooks.on("createChatMessage", async function (msg, status, id) {
     if (!msg.rolls || !game.user.isGM) return;
     const result = generateStat(msg);
+    debugLog({ msg, result })
     let all_rolls = game.user.getFlag('pf2e-roll-stats', 'rolls') ?? [];
     all_rolls.push(result)
     game.user.setFlag('pf2e-roll-stats', 'rolls', result);
-    debugLog({ msg, result })
 })
 
 export function generateStat(msg) {
