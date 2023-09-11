@@ -7,7 +7,7 @@ Hooks.on("ready", async () => {
 Hooks.on("createChatMessage", async function (msg, status, id) {
     if (!msg.rolls || !game.user.isGM) return;
     const result = generateStat(msg);
-    let all_rolls = game.user.getFlag('pf2e-roll-stats', 'rolls');
+    let all_rolls = game.user.getFlag('pf2e-roll-stats', 'rolls') ?? [];
     all_rolls.push(result)
     game.user.setFlag('pf2e-roll-stats', 'rolls', result);
     debugLog({ msg, result })
