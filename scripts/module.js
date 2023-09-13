@@ -12,7 +12,7 @@ Hooks.on("ready", async () => {
 Hooks.on('getSceneControlButtons', (controls) => {
     if (game.user.isGM) {
         controls.push({
-            activeTool: 'select',
+            activeTool: '',
             icon: 'fas fa-solid fa-signal',
             layer: 'pf2eRollStats',
             name: "pf2eRollStats",
