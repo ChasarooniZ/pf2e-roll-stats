@@ -15,12 +15,15 @@ Hooks.on('getSceneControlButtons', (controls) => {
             name: "pf2e-roll-stats-group",
             title: `PF2e Roll Stats`,
             icon: 'fas fa-solid fa-signal',
-            activeTool: 'select',
-            layer: 'controls',
+            activeTool: '',
+            visible: true,
+            layer: 'pf2e-roll-stats-group',
             tools: [{
                 name: "export-roll-stats",
                 title: `Export Roll Stats`,
                 icon: 'fas fa-solid fa-file-export',
+                visible: true,
+                button: true,
                 toggle: false,
                 onClick: () => {
                     ui.notifications.notify("Roll data has been exported and deleted")
