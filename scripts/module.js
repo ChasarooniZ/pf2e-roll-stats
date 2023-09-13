@@ -9,13 +9,13 @@ Hooks.on("ready", async () => {
     }
 });
 
-Hooks.on('getSceneControlButtons', (control) => {
+Hooks.on('getSceneControlButtons', (controls) => {
     if (game.user.isGM) {
-        control.push({
+        controls.push({
             name: "pf2e-roll-stats-group",
             title: `PF2e Roll Stats`,
-            icon: 'fas fa-solid fa-code-signal',
-            activeTool: '',
+            icon: 'fas fa-solid fa-signal',
+            activeTool: 'select',
             layer: 'controls',
             tools: [{
                 name: "export-roll-stats",
