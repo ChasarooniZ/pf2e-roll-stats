@@ -12,7 +12,6 @@ Hooks.on("ready", async () => {
 Hooks.on('getSceneControlButtons', (controls) => {
     if (game.user.isGM) {
         controls.push({
-            activeTool: '',
             icon: 'fas fa-solid fa-signal',
             layer: 'pf2eRollStats',
             name: "pf2eRollStats",
@@ -22,6 +21,7 @@ Hooks.on('getSceneControlButtons', (controls) => {
                 icon: 'fas fa-solid fa-file-export',
                 title: `Export Roll Stats`,
                 button: true,
+                visible: true,
                 onClick: () => {
                     ui.notifications.notify("Roll data has been exported and deleted");
                     exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), 'Roll Stats');
