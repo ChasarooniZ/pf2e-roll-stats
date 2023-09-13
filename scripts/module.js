@@ -16,6 +16,7 @@ Hooks.on('getSceneControlButtons', (controls) => {
             layer: 'pf2eRollStats',
             name: "pf2eRollStats",
             title: `PF2e Roll Stats`,
+            activeTool: 'exportRollStats',
             tools: [{
                 name: "exportRollStats",
                 icon: 'fas fa-solid fa-file-export',
