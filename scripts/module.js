@@ -4,7 +4,7 @@ Hooks.on("ready", async () => {
     //game.RPGNumbers = new RPGNumbers();
     ui.notifications.notify("PF2e Roll Stats Exist")
     game.pf2eRollStats.exportRolls = function (name) {
-        await exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), name);
+        exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), name);
         game.user.unsetFlag('pf2e-roll-stats', 'rolls')
     }
 });
@@ -24,7 +24,7 @@ Hooks.on('getSceneControlButtons', (control) => {
                 toggle: false,
                 onClick: () => {
                     ui.notifications.notify("Roll data has been exported and deleted")
-                    await exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), 'Roll Stats');
+                    exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), 'Roll Stats');
                     game.user.unsetFlag('pf2e-roll-stats', 'rolls')
                 }
             }]
@@ -39,7 +39,7 @@ Hooks.on("createChatMessage", async function (msg, status, id) {
     let all_rolls = game.user.getFlag('pf2e-roll-stats', 'rolls') ?? [];
     all_rolls.push(result)
     game.user.setFlag('pf2e-roll-stats', 'rolls', result);
-})
+});
 
 export function generateStat(msg) {
     let res = {};
