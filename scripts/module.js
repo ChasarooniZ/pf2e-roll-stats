@@ -1,5 +1,37 @@
 // import {generateDamageScroll, extractDamageInfoCombined, getTargetList} from './utility.js'
 // HOOKS STUFF
+Hooks.on("ready", async () => {
+    //game.RPGNumbers = new RPGNumbers();
+    ui.notifications.notify("PF2e Roll Stats Exist")
+    game.pf2eRollStats.exportRolls = function (name) {
+        await exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), name);
+        game.user.unsetFlag('pf2e-roll-stats', 'rolls')
+    }
+});
+
+Hooks.on('getSceneControlButtons', (control) => {
+    if (game.user.isGM) {
+        control.push({
+            name: "pf2e-roll-stats-group",
+            title: `PF2e Roll Stats`,
+            icon: 'fas fa-solid fa-code-signal',
+            activeTool: '',
+            layer: 'controls',
+            tools: [{
+                name: "export-roll-stats",
+                title: `Export Roll Stats`,
+                icon: 'fas fa-solid fa-file-export',
+                toggle: false,
+                onClick: () => {
+                    ui.notifications.notify("Roll data has been exported and deleted")
+                    await exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), 'Roll Stats');
+                    game.user.unsetFlag('pf2e-roll-stats', 'rolls')
+                }
+            }]
+        });
+    }
+});
+
 Hooks.on("createChatMessage", async function (msg, status, id) {
     if (!msg.rolls) /* || !game.user.isGM)*/ return;
     const result = generateStat(msg);
@@ -112,36 +144,3 @@ export function debugLog(data, context = "") {
 export function exportRollsAsJSON(rolls, name) {
     saveDataToFile(JSON.stringify(rolls), "json", `${name}.json`);
 }
-
-
-Hooks.on("ready", async () => {
-    //game.RPGNumbers = new RPGNumbers();
-    game.pf2eRollStats.exportRolls = function (name) {
-        await exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), name);
-        game.user.unsetFlag('pf2e-roll-stats', 'rolls')
-    }
-})
-
-Hooks.on('getSceneControlButtons', (control) => {
-    info("Add hook on getSceneControlButtons");
-    if (game.user.isGM) {
-        control.push({
-            name: "pf2e-roll-stats-group",
-            title: `PF2e Roll Stats`,
-            icon: 'fas fa-solid fa-code-signal',
-            activeTool: '',
-            layer: 'controls',
-            tools: [{
-                name: "export-roll-stats",
-                title: `Export Roll Stats`,
-                icon: 'fas fa-solid fa-file-export',
-                toggle: false,
-                onClick: () => {
-                    ui.notifications.notify("Roll data has been exported and deleted")
-                    await exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), 'Roll Stats');
-                    game.user.unsetFlag('pf2e-roll-stats', 'rolls')
-                }
-            }]
-        });
-    }
-});
