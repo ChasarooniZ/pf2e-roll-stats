@@ -12,25 +12,23 @@ Hooks.on("ready", async () => {
 Hooks.on('getSceneControlButtons', (controls) => {
     if (game.user.isGM) {
         controls.push({
-            name: "pf2e-roll-stats-group",
-            title: `PF2e Roll Stats`,
+            activeTool: 'select',
             icon: 'fas fa-solid fa-signal',
-            activeTool: '',
-            visible: true,
-            layer: 'pf2e-roll-stats-group',
+            layer: 'pf2eRollStats',
+            name: "pf2eRollStats",
+            title: `PF2e Roll Stats`,
             tools: [{
-                name: "export-roll-stats",
-                title: `Export Roll Stats`,
+                name: "exportRollStats",
                 icon: 'fas fa-solid fa-file-export',
-                visible: true,
+                title: `Export Roll Stats`,
                 button: true,
-                toggle: false,
                 onClick: () => {
-                    ui.notifications.notify("Roll data has been exported and deleted")
+                    ui.notifications.notify("Roll data has been exported and deleted");
                     exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), 'Roll Stats');
-                    game.user.unsetFlag('pf2e-roll-stats', 'rolls')
+                    game.user.unsetFlag('pf2e-roll-stats', 'rolls');
                 }
-            }]
+            }],
+            visible: true
         });
     }
 });
