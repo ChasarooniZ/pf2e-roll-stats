@@ -3,9 +3,11 @@
 Hooks.on("ready", async () => {
     //game.RPGNumbers = new RPGNumbers();
     ui.notifications.notify("PF2e Roll Stats Exist")
-    game.pf2eRollStats.exportRolls = function (name) {
-        exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), name);
-        game.user.unsetFlag('pf2e-roll-stats', 'rolls')
+    game.pf2eRollStats = {
+        exportRolls: function (name) {
+            exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), name);
+            game.user.unsetFlag('pf2e-roll-stats', 'rolls')
+        }
     }
 });
 
