@@ -66,11 +66,16 @@ export function generateStat(msg) {
         let result = {
             total: roll.total,
             dice: roll.dice.map(die => (
-                {
-                    type: die.faces,
-                    flavor: die.flavor,
-                    total: die.total
-                })
+                die.results.map(
+                    r => (
+                        {
+                            type: die.faces,
+                            flavor: die.flavor,
+                            total: r.result
+                        }
+                    )
+                )
+            )
             )
         }
         return result;
