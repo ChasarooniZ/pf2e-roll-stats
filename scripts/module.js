@@ -42,7 +42,7 @@ Hooks.on("createChatMessage", async function (msg, status, id) {
     debugLog({ msg, result })
     let all_rolls = game.user.getFlag('pf2e-roll-stats', 'rolls') ?? [];
     all_rolls.push(result)
-    game.user.setFlag('pf2e-roll-stats', 'rolls', result);
+    game.user.setFlag('pf2e-roll-stats', 'rolls', all_rolls);
 });
 
 export function generateStat(msg) {
