@@ -15,9 +15,7 @@ Hooks.on("ready", () => {
             layer: 'pf2eRollStats.ui.controls.group',
             name: "pf2eRollStats",
             title: `PF2e Roll Stats`,
-            activeTool: 'exportRollStats',
             visible: game.user.isGM,
-
             tools: [
                 {
                     name: "pf2eRollStats.ui.controls.export",
