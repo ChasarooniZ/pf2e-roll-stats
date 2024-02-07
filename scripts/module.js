@@ -12,13 +12,13 @@ Hooks.on("ready", () => {
     Hooks.on('getSceneControlButtons', async (controls) => {
         controls.push({
             icon: 'fas fa-solid fa-signal',
-            layer: 'pf2eRollStats.ui.controls.group',
-            name: "pf2eRollStats",
+            layer: 'rollstats',
+            name: "rollstats.ui.controls.group",
             title: `PF2e Roll Stats`,
             visible: game.user.isGM,
             tools: [
                 {
-                    name: "pf2eRollStats.ui.controls.export",
+                    name: "rollstats.ui.controls.export",
                     icon: 'fas fa-solid fa-file-export',
                     title: `Export Roll Stats`,
                     onClick: () => {
@@ -29,7 +29,7 @@ Hooks.on("ready", () => {
                     button: true
                 },
                 {
-                    name: "pf2eRollStats.ui.controls.active",
+                    name: "rollstats.ui.controls.active",
                     icon: 'fas fa-solid fa-video',
                     title: `Record Roll Stats`,
                     toggle: true,            
@@ -39,7 +39,7 @@ Hooks.on("ready", () => {
                     button: true
                 },
                 {
-                    name: "pf2eRollStats.ui.controls.delete",
+                    name: "rollstats.ui.controls.delete",
                     icon: 'fas fa-solid fa-trash',
                     title: `Delete Roll Stats`,
                     onClick: () => {
@@ -49,7 +49,7 @@ Hooks.on("ready", () => {
                     button: true
                 }
             ],
-            activeTool: 'export'
+            activeTool: 'rollstats'
         
         });
     });
