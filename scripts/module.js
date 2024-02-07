@@ -11,7 +11,7 @@ Hooks.on("ready", () => {
     }
     Hooks.on('getSceneControlButtons', async (controls) => {
         controls.push({
-            icon: 'fas fa-solid fa-signal',
+            icon: 'fas fa-solid fa-chart-simple',
             layer: 'rollstats',
             name: "rollstats.ui.controls.group",
             title: `PF2e Roll Stats`,
@@ -49,7 +49,7 @@ Hooks.on("ready", () => {
                     button: true
                 }
             ],
-            activeTool: 'rollstats'
+            activeTool: 'rollstats.ui.controls.group'
         
         });
     });
