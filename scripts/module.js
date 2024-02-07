@@ -1,13 +1,19 @@
 // import {generateDamageScroll, extractDamageInfoCombined, getTargetList} from './utility.js'
+
+import { getTargetTokens } from "./helpers/targets.js";
+
 // HOOKS STUFF
 Hooks.on("ready", () => {
     //game.RPGNumbers = new RPGNumbers();
     ui.notifications.notify("PF2e Roll Stats Exist")
     game.pf2eRollStats = {
         exportRolls: function (name) {
-            exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), name);
+            exportRollsAsJSON(name);
             game.user.unsetFlag('pf2e-roll-stats', 'rolls')
-        }
+        },
+        setSession,
+        toggleLogStats: toggleLoggingStats
+
     }
     Hooks.on('getSceneControlButtons', async (controls) => {
         controls.push({
@@ -70,12 +76,13 @@ Hooks.on("ready", () => {
     });
 
     Hooks.on("createChatMessage", async function (msg, status, id) {
-        if (!msg.rolls && !game.user.isGM) return;
-        const result = generateStat(msg);
-        debugLog({ msg, result })
-        let all_rolls = game.user.getFlag('pf2e-roll-stats', 'rolls') ?? [];
-        all_rolls.push(result)
-        game.user.setFlag('pf2e-roll-stats', 'rolls', all_rolls);
+        if (msg.rolls && game.user.isGM && game.user.getFlag('pf2e-roll-stats', 'log-stats')) {
+            const result = generateStat(msg);
+            debugLog({ msg, result })
+            let all_rolls = game.user.getFlag('pf2e-roll-stats', 'rolls') ?? [];
+            all_rolls.push(result)
+            game.user.setFlag('pf2e-roll-stats', 'rolls', all_rolls);
+        }
     });
 });
 
@@ -100,10 +107,8 @@ export function generateStat(msg) {
     res.rollMode = context?.rollMode;
     res.user = msg?.user?.id;
     res.timestamp = msg.timestamp;
-    res.targetActors = msg?.flags?.["pf2e-target-damage"] ? msg?.flags?.["pf2e-target-damage"]?.targets?.map(t => t.uuid) : [context?.target?.actor];
-    res.targetActorNames = msg?.flags?.["pf2e-target-damage"] ? msg?.flags?.["pf2e-target-damage"]?.targets?.map(t => t.actorUuid.split('.')[0]) : [context?.target?.actor && game.actors.get(context?.target?.actor)?.name];
-    res.targetTokens = msg?.flags?.["pf2e-target-damage"] ? msg?.flags?.["pf2e-target-damage"]?.targets?.map(t => game.actors.get(t.actorUuid.split('.')[0]).name) : [context?.target?.token];
-    res.targetTokenNames = msg?.flags?.["pf2e-target-damage"] ? msg?.flags?.["pf2e-target-damage"]?.targets?.map(t => canvas.token.get(t.id)) : [context?.target?.token && canvas.tokens.get(context?.target?.token)?.name];
+    res.targetActors = getTargetTokens(msg);
+    res.targetTokens = getTargetTokens(msg);
 
     res.rolls = msg?.rolls.map(roll => {
         let result = {
@@ -193,6 +198,23 @@ export function debugLog(data, context = "") {
         console.log(`PF2E-Roll-Stats.${context}:`, data);
 }
 
-export function exportRollsAsJSON(rolls, name) {
-    saveDataToFile(JSON.stringify(rolls), "json", `${name}.json`);
+export function setSession() {
+    const currSession = game.user.getFlag('pf2e-roll-stats', 'session') || '';
+    let myValue = await Dialog.prompt({
+        title: "Set Session Number",
+        content: `<p>Current Session Number '${currSession}'</p><p>New Session Number:<input type="text"></p>`,
+        callback: (html) => html.find('input').val()
+    })
+    game.user.setFlag('pf2e-roll-stats', 'session', myValue);
+}
+export function toggleLoggingStats() {
+    game.user.setFlag('pf2e-roll-stats', 'log-stats', !game.user.getFlag('pf2e-roll-stats', 'log-stats'))
+}
+
+export function exportRollsAsJSON(name) {
+    const data = {
+        name: game.user.getFlag('pf2e-roll-stats', 'session') || '',
+        rolls: game.user.getFlag('pf2e-roll-stats', 'rolls')
+    }
+    saveDataToFile(JSON.stringify(data), "json", `${name}.json`);
 }

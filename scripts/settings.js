@@ -15,4 +15,12 @@ Hooks.on("init", () => {
         default: false,
         type: Boolean,
     });
+    game.settings.register("pf2e-roll-stats", "log-stats", { //Controls whether to log stats currently or not
+        name: game.i18n.localize("pf2e-roll-stats.module-settings.log-stats.name"),
+        hint: game.i18n.localize("pf2e-roll-stats.module-settings.log-stats.hint"),
+        scope: "world",
+        config: false,
+        default: true,
+        type: Boolean,
+    });
 });
