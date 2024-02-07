@@ -10,28 +10,50 @@ Hooks.on("ready", () => {
         }
     }
     Hooks.on('getSceneControlButtons', async (controls) => {
-        if (game.user.isGM) {
-            controls.push({
-                icon: 'fas fa-solid fa-signal',
-                layer: 'pf2eRollStats',
-                name: "pf2eRollStats",
-                title: `PF2e Roll Stats`,
-                activeTool: 'exportRollStats',
-                tools: [{
-                    name: "exportRollStats",
+        controls.push({
+            icon: 'fas fa-solid fa-signal',
+            layer: 'pf2eRollStats.ui.controls.group',
+            name: "pf2eRollStats",
+            title: `PF2e Roll Stats`,
+            activeTool: 'exportRollStats',
+            visible: game.user.isGM,
+
+            tools: [
+                {
+                    name: "pf2eRollStats.ui.controls.export",
                     icon: 'fas fa-solid fa-file-export',
                     title: `Export Roll Stats`,
-                    button: true,
-                    visible: true,
                     onClick: () => {
                         ui.notifications.notify("Roll data has been exported and deleted");
                         exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), 'Roll Stats');
                         game.user.unsetFlag('pf2e-roll-stats', 'rolls');
-                    }
-                }],
-                visible: true
-            });
-        }
+                    },
+                    button: true
+                },
+                {
+                    name: "pf2eRollStats.ui.controls.active",
+                    icon: 'fas fa-solid fa-video',
+                    title: `Record Roll Stats`,
+                    toggle: true,            
+                    onClick: (toggled) => {
+                        //TODO Implement
+                    },
+                    button: true
+                },
+                {
+                    name: "pf2eRollStats.ui.controls.delete",
+                    icon: 'fas fa-solid fa-trash',
+                    title: `Delete Roll Stats`,
+                    onClick: () => {
+                        ui.notifications.notify("Roll data has been deleted");
+                        game.user.unsetFlag('pf2e-roll-stats', 'rolls');
+                    },
+                    button: true
+                }
+            ],
+            activeTool: 'export'
+        
+        });
     });
 
     Hooks.on("createChatMessage", async function (msg, status, id) {
@@ -53,20 +75,22 @@ export function generateStat(msg) {
     res.domains = (context?.domains ?? []).concat(context?.options?.filter(o => o.startsWith('action:')) ?? [])
     res.tokenId = context?.token;
     res.tokenName = context?.token && canvas.tokens.get(context?.token)?.name;
+    res.tokenImg = context?.token && canvas.tokens.get(context?.token)?.document?.texture?.src;
     res.isReroll = context?.isReroll ?? false;
-    res.traits = context?.traits?.map(t => t.name);
+    res.traits = context?.traits;
     res.actorId = context?.actor;
     res.actorName = context?.actor && game.actors.get(context?.actor)?.name;
+    res.actorImg = context?.actor && game.actors.get(context?.actor)?.img;
     res.type = context?.type;
     res.outcome = context?.outcome;
     res.secret = context?.secret || context?.rollMode === 'gmroll';
     res.rollMode = context?.rollMode;
     res.user = msg?.user?.id;
     res.timestamp = msg.timestamp;
-    res.targetActor = context?.target?.actor;
-    res.tokenName = context?.target?.actor && game.actors.get(context?.target?.actor)?.name;
-    res.targetToken = context?.target?.token;
-    res.targetTokenName = context?.target?.token && canvas.tokens.get(context?.target?.token)?.name;
+    res.targetActors = msg?.flags?.["pf2e-target-damage"] ? msg?.flags?.["pf2e-target-damage"]?.targets?.map(t => t.uuid) : [context?.target?.actor];
+    res.targetActorNames = msg?.flags?.["pf2e-target-damage"] ? msg?.flags?.["pf2e-target-damage"]?.targets?.map(t => t.actorUuid.split('.')[0]) : [context?.target?.actor && game.actors.get(context?.target?.actor)?.name];
+    res.targetTokens = msg?.flags?.["pf2e-target-damage"] ? msg?.flags?.["pf2e-target-damage"]?.targets?.map(t => game.actors.get(t.actorUuid.split('.')[0]).name) : [context?.target?.token];
+    res.targetTokenNames = msg?.flags?.["pf2e-target-damage"] ? msg?.flags?.["pf2e-target-damage"]?.targets?.map(t => canvas.token.get(t.id)) : [context?.target?.token && canvas.tokens.get(context?.target?.token)?.name];
 
     res.rolls = msg?.rolls.map(roll => {
         let result = {
