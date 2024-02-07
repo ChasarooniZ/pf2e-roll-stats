@@ -1,6 +1,6 @@
 // import {generateDamageScroll, extractDamageInfoCombined, getTargetList} from './utility.js'
 // HOOKS STUFF
-Hooks.on("ready", async () => {
+Hooks.on("ready", () => {
     //game.RPGNumbers = new RPGNumbers();
     ui.notifications.notify("PF2e Roll Stats Exist")
     game.pf2eRollStats = {
@@ -9,55 +9,56 @@ Hooks.on("ready", async () => {
             game.user.unsetFlag('pf2e-roll-stats', 'rolls')
         }
     }
+    Hooks.on('getSceneControlButtons', async (controls) => {
+        if (game.user.isGM) {
+            controls.push({
+                icon: 'fas fa-solid fa-signal',
+                layer: 'pf2eRollStats',
+                name: "pf2eRollStats",
+                title: `PF2e Roll Stats`,
+                activeTool: 'exportRollStats',
+                tools: [{
+                    name: "exportRollStats",
+                    icon: 'fas fa-solid fa-file-export',
+                    title: `Export Roll Stats`,
+                    button: true,
+                    visible: true,
+                    onClick: () => {
+                        ui.notifications.notify("Roll data has been exported and deleted");
+                        exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), 'Roll Stats');
+                        game.user.unsetFlag('pf2e-roll-stats', 'rolls');
+                    }
+                }],
+                visible: true
+            });
+        }
+    });
+
+    Hooks.on("createChatMessage", async function (msg, status, id) {
+        if (!msg.rolls && !game.user.isGM) return;
+        const result = generateStat(msg);
+        debugLog({ msg, result })
+        let all_rolls = game.user.getFlag('pf2e-roll-stats', 'rolls') ?? [];
+        all_rolls.push(result)
+        game.user.setFlag('pf2e-roll-stats', 'rolls', all_rolls);
+    });
 });
 
-Hooks.on('getSceneControlButtons', (controls) => {
-    if (game.user.isGM) {
-        controls.push({
-            icon: 'fas fa-solid fa-signal',
-            layer: 'pf2eRollStats',
-            name: "pf2eRollStats",
-            title: `PF2e Roll Stats`,
-            activeTool: 'exportRollStats',
-            tools: [{
-                name: "exportRollStats",
-                icon: 'fas fa-solid fa-file-export',
-                title: `Export Roll Stats`,
-                button: true,
-                visible: true,
-                onClick: () => {
-                    ui.notifications.notify("Roll data has been exported and deleted");
-                    exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), 'Roll Stats');
-                    game.user.unsetFlag('pf2e-roll-stats', 'rolls');
-                }
-            }],
-            visible: true
-        });
-    }
-});
 
-Hooks.on("createChatMessage", async function (msg, status, id) {
-    if (!msg.rolls) /* || !game.user.isGM)*/ return;
-    const result = generateStat(msg);
-    debugLog({ msg, result })
-    let all_rolls = game.user.getFlag('pf2e-roll-stats', 'rolls') ?? [];
-    all_rolls.push(result)
-    game.user.setFlag('pf2e-roll-stats', 'rolls', all_rolls);
-});
 
 export function generateStat(msg) {
     let res = {};
     const context = msg?.flags?.pf2e?.context;
-    res.dc = context.dc;
+    res.dc = context?.dc;
     res.domains = (context?.domains ?? []).concat(context?.options?.filter(o => o.startsWith('action:')) ?? [])
     res.token
     res.isReroll = context?.isReroll ?? false;
-    res.traits = context?.traits.map(t => t.name);
+    res.traits = context?.traits?.map(t => t.name);
     res.actor = context.actor;
     res.type = context.type;
-    res.outcome = context.outcome;
-    res.secret = context?.secret || context.rollMode === 'gmroll';
-    res.rollMode;
+    res.outcome = context?.outcome;
+    res.secret = context?.secret || context?.rollMode === 'gmroll';
+    res.rollMode = context?.rollMode;
     res.user = msg?.user?.id;
     res.timestamp = msg.timestamp;
 
