@@ -52,23 +52,23 @@ export function generateStat(msg) {
     res.dc = context?.dc;
     res.domains = (context?.domains ?? []).concat(context?.options?.filter(o => o.startsWith('action:')) ?? [])
     res.tokenId = context?.token;
-    res.tokenName = context.token && canvas.tokens.get(context.token)?.name;
+    res.tokenName = context?.token && canvas.tokens.get(context?.token)?.name;
     res.isReroll = context?.isReroll ?? false;
     res.traits = context?.traits?.map(t => t.name);
-    res.actorId = context.actor;
-    res.actorName = context.actor && game.actors.get(context.actor)?.name;
-    res.type = context.type;
+    res.actorId = context?.actor;
+    res.actorName = context?.actor && game.actors.get(context?.actor)?.name;
+    res.type = context?.type;
     res.outcome = context?.outcome;
     res.secret = context?.secret || context?.rollMode === 'gmroll';
     res.rollMode = context?.rollMode;
     res.user = msg?.user?.id;
     res.timestamp = msg.timestamp;
-    res.targetActor = context.target?.actor;
-    res.tokenName = context.target?.actor && game.actors.get(context.target?.actor)?.name;
-    res.targetToken = context.target?.token;
-    res.targetTokenName = context.target?.token && canvas.tokens.get(context.target?.token)?.name;
+    res.targetActor = context?.target?.actor;
+    res.tokenName = context?.target?.actor && game.actors.get(context?.target?.actor)?.name;
+    res.targetToken = context?.target?.token;
+    res.targetTokenName = context?.target?.token && canvas.tokens.get(context?.target?.token)?.name;
 
-    res.rolls = msg.rolls.map(roll => {
+    res.rolls = msg?.rolls.map(roll => {
         let result = {
             total: roll.total,
             dice: roll.dice.map(die => (
