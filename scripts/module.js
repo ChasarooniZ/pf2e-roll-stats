@@ -11,46 +11,61 @@ Hooks.on("ready", () => {
     }
     Hooks.on('getSceneControlButtons', async (controls) => {
         controls.push({
-            icon: 'fas fa-solid fa-chart-simple',
-            layer: 'rollstats',
-            name: "rollstats.ui.controls.group",
+            icon: 'fas fa-chart-simple',
+            layer: 'stats',
+            name: "rollstats",
             title: `PF2e Roll Stats`,
             visible: game.user.isGM,
             tools: [
                 {
-                    name: "rollstats.ui.controls.export",
-                    icon: 'fas fa-solid fa-file-export',
+                    name: "export",
+                    icon: 'fas fa-file-export',
                     title: `Export Roll Stats`,
                     onClick: () => {
-                        ui.notifications.notify("Roll data has been exported and deleted");
-                        exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), 'Roll Stats');
-                        game.user.unsetFlag('pf2e-roll-stats', 'rolls');
+                        Dialog.confirm({
+                            title: game.i18n.localize("FXMASTER.ClearParticleAndFilterEffectsTitle"),
+                            content: game.i18n.localize("FXMASTER.ClearParticleAndFilterEffectsContent"),
+                            yes: () => {
+                                ui.notifications.notify("Roll data has been exported and deleted");
+                                exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), 'Roll Stats');
+                                game.user.unsetFlag('pf2e-roll-stats', 'rolls');
+                            },
+                            defaultYes: true,
+                        });
                     },
                     button: true
                 },
                 {
-                    name: "rollstats.ui.controls.active",
-                    icon: 'fas fa-solid fa-video',
+                    name: "active",
+                    icon: 'fas fa-video',
                     title: `Record Roll Stats`,
-                    toggle: true,            
+                    toggle: true,
                     onClick: (toggled) => {
                         //TODO Implement
+                        console.log(toggled)
                     },
                     button: true
                 },
                 {
-                    name: "rollstats.ui.controls.delete",
-                    icon: 'fas fa-solid fa-trash',
+                    name: "delete",
+                    icon: 'fas fa-trash',
                     title: `Delete Roll Stats`,
                     onClick: () => {
-                        ui.notifications.notify("Roll data has been deleted");
-                        game.user.unsetFlag('pf2e-roll-stats', 'rolls');
+                        Dialog.confirm({
+                            title: game.i18n.localize("FXMASTER.ClearParticleAndFilterEffectsTitle"),
+                            content: game.i18n.localize("FXMASTER.ClearParticleAndFilterEffectsContent"),
+                            yes: () => {
+                                ui.notifications.notify("Roll data has been deleted");
+                                game.user.unsetFlag('pf2e-roll-stats', 'rolls');
+                            },
+                            defaultYes: true,
+                        });
                     },
                     button: true
                 }
             ],
-            activeTool: 'rollstats.ui.controls.group'
-        
+            activeTool: 'rollstats'
+
         });
     });
 
