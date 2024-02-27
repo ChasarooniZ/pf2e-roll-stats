@@ -12,7 +12,7 @@ Hooks.on("ready", () => {
             game.user.unsetFlag('pf2e-roll-stats', 'rolls')
         },
         setSession,
-        toggleLogStats: toggleLoggingStats
+        toggleLoggingStats
 
     }
     Hooks.on('getSceneControlButtons', async (controls) => {
@@ -195,7 +195,7 @@ export function generateStat(msg) {
 
 export function debugLog(data, context = "") {
     if (game.settings.get("pf2e-roll-stats", 'debug-mode'))
-        console.log(`PF2E-Roll-Stats.${context}:`, data);
+        console.log(`PF2E-Roll-Stats${context || "." + context}:`, data);
 }
 
 export function setSession() {
