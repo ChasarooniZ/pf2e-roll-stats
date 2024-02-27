@@ -80,7 +80,7 @@ Hooks.on("ready", () => {
     });
 
     Hooks.on("createChatMessage", async function (msg, status, id) {
-        if (msg.rolls && game.user.isGM && game.user.getFlag('pf2e-roll-stats', 'log-stats')) {
+        if (msg.rolls && game.user.isGM && game.settings.getFlag('pf2e-roll-stats', 'log-stats')) {
             const result = generateStat(msg);
             debugLog({ msg, result })
             let all_rolls = game.user.getFlag('pf2e-roll-stats', 'rolls') ?? [];
@@ -212,7 +212,7 @@ export function setSession() {
     game.user.setFlag('pf2e-roll-stats', 'session', myValue);
 }
 export function toggleLoggingStats() {
-    game.user.setFlag('pf2e-roll-stats', 'log-stats', !game.user.getFlag('pf2e-roll-stats', 'log-stats'))
+    game.settings.setFlag('pf2e-roll-stats', 'log-stats', !game.settings.getFlag('pf2e-roll-stats', 'log-stats'))
 }
 
 export function exportRollsAsJSON(name) {
