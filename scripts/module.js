@@ -11,8 +11,12 @@ Hooks.on("ready", () => {
             exportRollsAsJSON(name);
             game.user.unsetFlag('pf2e-roll-stats', 'rolls')
         },
-        setSession,
-        toggleLoggingStats
+        setSession: function() {
+            setSession
+        },
+        toggleLoggingStats: function() {
+            toggleLoggingStats
+        },
 
     }
     Hooks.on('getSceneControlButtons', async (controls) => {
