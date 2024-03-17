@@ -4,135 +4,147 @@ import { getTargetTokens } from "./helpers/targets.js";
 
 // HOOKS STUFF
 Hooks.on("ready", () => {
-    //game.RPGNumbers = new RPGNumbers();
-    ui.notifications.notify("PF2e Roll Stats Exist")
-    game.pf2eRollStats = {
-        exportRolls: function (name) {
-            exportRollsAsJSON(name);
-            game.user.unsetFlag('pf2e-roll-stats', 'rolls')
+  //game.RPGNumbers = new RPGNumbers();
+  ui.notifications.notify("PF2e Roll Stats Exist");
+  game.pf2eRollStats = {
+    exportRolls: function (name) {
+      exportRollsAsJSON(name);
+      game.user.unsetFlag("pf2e-roll-stats", "rolls");
+    },
+    setSession: function () {
+      setSession;
+    },
+    toggleLoggingStats: function () {
+      toggleLoggingStats;
+    },
+  };
+  Hooks.on("getSceneControlButtons", async (controls) => {
+    controls.push({
+      icon: "fas fa-chart-simple",
+      layer: "stats",
+      name: "rollstats",
+      title: `PF2e Roll Stats`,
+      visible: game.user.isGM,
+      tools: [
+        {
+          name: "export",
+          icon: "fas fa-file-export",
+          title: `Export Roll Stats`,
+          onClick: () => {
+            Dialog.confirm({
+              title: game.i18n.localize(
+                "FXMASTER.ClearParticleAndFilterEffectsTitle"
+              ),
+              content: game.i18n.localize(
+                "FXMASTER.ClearParticleAndFilterEffectsContent"
+              ),
+              yes: () => {
+                ui.notifications.notify(
+                  "Roll data has been exported and deleted"
+                );
+                exportRollsAsJSON(
+                  game.user.getFlag("pf2e-roll-stats", "rolls"),
+                  "Roll Stats"
+                );
+                game.user.unsetFlag("pf2e-roll-stats", "rolls");
+              },
+              defaultYes: true,
+            });
+          },
+          button: true,
         },
-        setSession: function() {
-            setSession
+        {
+          name: "active",
+          icon: "fas fa-video",
+          title: `Record Roll Stats`,
+          toggle: true,
+          onClick: (toggled) => {
+            //TODO Implement
+            console.log(toggled);
+          },
+          button: true,
         },
-        toggleLoggingStats: function() {
-            toggleLoggingStats
+        {
+          name: "delete",
+          icon: "fas fa-trash",
+          title: `Delete Roll Stats`,
+          onClick: () => {
+            Dialog.confirm({
+              title: game.i18n.localize(
+                "FXMASTER.ClearParticleAndFilterEffectsTitle"
+              ),
+              content: game.i18n.localize(
+                "FXMASTER.ClearParticleAndFilterEffectsContent"
+              ),
+              yes: () => {
+                ui.notifications.notify("Roll data has been deleted");
+                game.user.unsetFlag("pf2e-roll-stats", "rolls");
+              },
+              defaultYes: true,
+            });
+          },
+          button: true,
         },
+      ],
+      activeTool: "rollstats",
+    });
+  });
 
+  Hooks.on("createChatMessage", async function (msg, status, id) {
+    if (
+      msg.rolls &&
+      game.user.isGM &&
+      game.settings.getFlag("pf2e-roll-stats", "log-stats")
+    ) {
+      const result = generateStat(msg);
+      debugLog({ msg, result });
+      let all_rolls = game.user.getFlag("pf2e-roll-stats", "rolls") ?? [];
+      all_rolls.push(result);
+      game.user.setFlag("pf2e-roll-stats", "rolls", all_rolls);
     }
-    Hooks.on('getSceneControlButtons', async (controls) => {
-        controls.push({
-            icon: 'fas fa-chart-simple',
-            layer: 'stats',
-            name: "rollstats",
-            title: `PF2e Roll Stats`,
-            visible: game.user.isGM,
-            tools: [
-                {
-                    name: "export",
-                    icon: 'fas fa-file-export',
-                    title: `Export Roll Stats`,
-                    onClick: () => {
-                        Dialog.confirm({
-                            title: game.i18n.localize("FXMASTER.ClearParticleAndFilterEffectsTitle"),
-                            content: game.i18n.localize("FXMASTER.ClearParticleAndFilterEffectsContent"),
-                            yes: () => {
-                                ui.notifications.notify("Roll data has been exported and deleted");
-                                exportRollsAsJSON(game.user.getFlag('pf2e-roll-stats', 'rolls'), 'Roll Stats');
-                                game.user.unsetFlag('pf2e-roll-stats', 'rolls');
-                            },
-                            defaultYes: true,
-                        });
-                    },
-                    button: true
-                },
-                {
-                    name: "active",
-                    icon: 'fas fa-video',
-                    title: `Record Roll Stats`,
-                    toggle: true,
-                    onClick: (toggled) => {
-                        //TODO Implement
-                        console.log(toggled)
-                    },
-                    button: true
-                },
-                {
-                    name: "delete",
-                    icon: 'fas fa-trash',
-                    title: `Delete Roll Stats`,
-                    onClick: () => {
-                        Dialog.confirm({
-                            title: game.i18n.localize("FXMASTER.ClearParticleAndFilterEffectsTitle"),
-                            content: game.i18n.localize("FXMASTER.ClearParticleAndFilterEffectsContent"),
-                            yes: () => {
-                                ui.notifications.notify("Roll data has been deleted");
-                                game.user.unsetFlag('pf2e-roll-stats', 'rolls');
-                            },
-                            defaultYes: true,
-                        });
-                    },
-                    button: true
-                }
-            ],
-            activeTool: 'rollstats'
-
-        });
-    });
-
-    Hooks.on("createChatMessage", async function (msg, status, id) {
-        if (msg.rolls && game.user.isGM && game.settings.getFlag('pf2e-roll-stats', 'log-stats')) {
-            const result = generateStat(msg);
-            debugLog({ msg, result })
-            let all_rolls = game.user.getFlag('pf2e-roll-stats', 'rolls') ?? [];
-            all_rolls.push(result)
-            game.user.setFlag('pf2e-roll-stats', 'rolls', all_rolls);
-        }
-    });
+  });
 });
 
-
-
 export function generateStat(msg) {
-    let res = {};
-    const context = msg?.flags?.pf2e?.context;
-    res.dc = context?.dc;
-    res.domains = (context?.domains ?? []).concat(context?.options?.filter(o => o.startsWith('action:')) ?? [])
-    res.tokenId = context?.token;
-    res.tokenName = context?.token && canvas.tokens.get(context?.token)?.name;
-    res.tokenImg = context?.token && canvas.tokens.get(context?.token)?.document?.texture?.src;
-    res.isReroll = context?.isReroll ?? false;
-    res.traits = context?.traits;
-    res.actorId = context?.actor;
-    res.actorName = context?.actor && game.actors.get(context?.actor)?.name;
-    res.actorImg = context?.actor && game.actors.get(context?.actor)?.img;
-    res.type = context?.type;
-    res.outcome = context?.outcome;
-    res.secret = context?.secret || context?.rollMode === 'gmroll';
-    res.rollMode = context?.rollMode;
-    res.user = msg?.user?.id;
-    res.timestamp = msg.timestamp;
-    res.targetActors = getTargetTokens(msg);
-    res.targetTokens = getTargetTokens(msg);
-
-    res.rolls = msg?.rolls.map(roll => {
-        let result = {
-            total: roll.total,
-            dice: roll.dice.map(die => (
-                die.results.map(
-                    r => (
-                        {
-                            type: die.faces,
-                            flavor: die.flavor,
-                            total: r.result
-                        }
-                    )
-                )
-            )
-            )
-        }
-        return result;
-    })
-    return res;
+  let res = {};
+  const context = msg?.flags?.pf2e?.context;
+  res.msgID = msg?.id;
+  res.dc = context?.dc;
+  res.domains = (context?.domains ?? []).concat(
+    context?.options?.filter((o) => o.startsWith("action:")) ?? []
+  );
+  res.tokenId = context?.token;
+  res.tokenName = context?.token && canvas.tokens.get(context?.token)?.name;
+  res.tokenImg =
+    context?.token && canvas.tokens.get(context?.token)?.document?.texture?.src;
+  res.isReroll = context?.isReroll ?? false;
+  res.traits = context?.traits;
+  res.actorId = context?.actor;
+  res.actorName = context?.actor && game.actors.get(context?.actor)?.name;
+  res.actorImg = context?.actor && game.actors.get(context?.actor)?.img;
+  res.type = context?.type;
+  res.outcome = context?.outcome;
+  res.secret = context?.secret || context?.rollMode === "gmroll";
+  res.rollMode = context?.rollMode;
+  res.user = msg?.user?.id;
+  res.timestamp = msg.timestamp;
+  res.targetActors = getTargetTokens(msg);
+  res.targetTokens = getTargetTokens(msg);
+  res.rolls = msg?.rolls.map((roll) => {
+    return {
+      total: roll.total,
+      dice: roll.dice.map((die) => ({
+        die: die.results.map((r) => ({
+          faces: die.faces,
+          flavor: die.flavor,
+          total: r.result,
+          active: r.active,
+        })),
+        expression: dice.expression,
+      })),
+    };
+  });
+  return res;
 }
 
 // export function extractTerm(term, flavor = '') {
@@ -198,27 +210,31 @@ export function generateStat(msg) {
 // }
 
 export function debugLog(data, context = "") {
-    if (game.settings.get("pf2e-roll-stats", 'debug-mode'))
-        console.log(`PF2E-Roll-Stats${context || "." + context}:`, data);
+  if (game.settings.get("pf2e-roll-stats", "debug-mode"))
+    console.log(`PF2E-Roll-Stats${context || "." + context}:`, data);
 }
 
-export function setSession() {
-    const currSession = game.user.getFlag('pf2e-roll-stats', 'session') || '';
-    let myValue = await Dialog.prompt({
-        title: "Set Session Number",
-        content: `<p>Current Session Number '${currSession}'</p><p>New Session Number:<input type="text"></p>`,
-        callback: (html) => html.find('input').val()
-    })
-    game.user.setFlag('pf2e-roll-stats', 'session', myValue);
+export async function setSession() {
+  const currSession = game.user.getFlag("pf2e-roll-stats", "session") || "";
+  let myValue = await Dialog.prompt({
+    title: "Set Session Number",
+    content: `<p>Current Session Number '${currSession}'</p><p>New Session Number:<input type="text"></p>`,
+    callback: (html) => html.find("input").val(),
+  });
+  game.user.setFlag("pf2e-roll-stats", "session", myValue);
 }
 export function toggleLoggingStats() {
-    game.settings.setFlag('pf2e-roll-stats', 'log-stats', !game.settings.getFlag('pf2e-roll-stats', 'log-stats'))
+  game.settings.setFlag(
+    "pf2e-roll-stats",
+    "log-stats",
+    !game.settings.getFlag("pf2e-roll-stats", "log-stats")
+  );
 }
 
 export function exportRollsAsJSON(name) {
-    const data = {
-        name: game.user.getFlag('pf2e-roll-stats', 'session') || '',
-        rolls: game.user.getFlag('pf2e-roll-stats', 'rolls')
-    }
-    saveDataToFile(JSON.stringify(data), "json", `${name}.json`);
+  const data = {
+    name: game.user.getFlag("pf2e-roll-stats", "session") || "",
+    rolls: game.user.getFlag("pf2e-roll-stats", "rolls"),
+  };
+  saveDataToFile(JSON.stringify(data), "json", `${name}.json`);
 }
