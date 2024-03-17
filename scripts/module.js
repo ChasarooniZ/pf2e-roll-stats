@@ -59,8 +59,7 @@ Hooks.on("ready", () => {
           title: `Record Roll Stats`,
           toggle: true,
           onClick: (toggled) => {
-            //TODO Implement
-            console.log(toggled);
+            game.settings.set("pf2e-roll-stats", "log-stats", toggled);
           },
           button: true,
         },
@@ -94,7 +93,7 @@ Hooks.on("ready", () => {
     if (
       msg.rolls &&
       game.user.isGM &&
-      game.settings.getFlag("pf2e-roll-stats", "log-stats")
+      game.settings.get("pf2e-roll-stats", "log-stats")
     ) {
       const result = generateStat(msg);
       debugLog({ msg, result });
@@ -224,10 +223,10 @@ export async function setSession() {
   game.user.setFlag("pf2e-roll-stats", "session", myValue);
 }
 export function toggleLoggingStats() {
-  game.settings.setFlag(
+  game.settings.set(
     "pf2e-roll-stats",
     "log-stats",
-    !game.settings.getFlag("pf2e-roll-stats", "log-stats")
+    !game.settings.get("pf2e-roll-stats", "log-stats")
   );
 }
 
