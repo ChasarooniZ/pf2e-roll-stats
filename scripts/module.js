@@ -4,19 +4,14 @@ import { getTargetTokens } from "./helpers/targets.js";
 
 // HOOKS STUFF
 Hooks.on("ready", () => {
-  //game.RPGNumbers = new RPGNumbers();
   ui.notifications.notify("PF2e Roll Stats Exist");
   game.pf2eRollStats = {
     exportRolls: function (name) {
       exportRollsAsJSON(name);
       game.user.unsetFlag("pf2e-roll-stats", "rolls");
     },
-    setSession: function () {
-      setSession;
-    },
-    toggleLoggingStats: function () {
-      toggleLoggingStats;
-    },
+    setSession: setSession,
+    toggleLoggingStats: toggleLoggingStats,
   };
   Hooks.on("getSceneControlButtons", async (controls) => {
     controls.push({
@@ -42,16 +37,14 @@ Hooks.on("ready", () => {
                 ui.notifications.notify(
                   "Roll data has been exported and deleted"
                 );
-                exportRollsAsJSON(
-                  game.user.getFlag("pf2e-roll-stats", "rolls"),
-                  "Roll Stats"
-                );
+                exportRollsAsJSON("Roll Stats");
                 game.user.unsetFlag("pf2e-roll-stats", "rolls");
               },
               defaultYes: true,
             });
           },
           button: true,
+          visible: true,
         },
         {
           name: "active",
@@ -62,6 +55,7 @@ Hooks.on("ready", () => {
             game.settings.set("pf2e-roll-stats", "log-stats", toggled);
           },
           button: true,
+          visible: true,
         },
         {
           name: "delete",
@@ -83,13 +77,14 @@ Hooks.on("ready", () => {
             });
           },
           button: true,
+          visible: true,
         },
       ],
-      activeTool: "rollstats",
+      activeTool: "export",
     });
   });
 
-  Hooks.on("createChatMessage", async function (msg, status, id) {
+  Hooks.on("createChatMessage", async function (msg, _status, _id) {
     if (
       msg.rolls &&
       game.user.isGM &&
@@ -139,7 +134,7 @@ export function generateStat(msg) {
           total: r.result,
           active: r.active,
         })),
-        expression: dice.expression,
+        expression: die.expression,
       })),
     };
   });
