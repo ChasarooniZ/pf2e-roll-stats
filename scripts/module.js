@@ -2,17 +2,7 @@
 
 import { getTargetTokens } from "./helpers/targets.js";
 
-// HOOKS STUFF
-Hooks.on("ready", () => {
-  ui.notifications.notify("PF2e Roll Stats Exist");
-  game.pf2eRollStats = {
-    exportRolls: function (name) {
-      exportRollsAsJSON(name);
-      game.user.unsetFlag("pf2e-roll-stats", "rolls");
-    },
-    setSession: setSession,
-    toggleLoggingStats: toggleLoggingStats,
-  };
+Hooks.on("init", () => {
   Hooks.on("getSceneControlButtons", async (controls) => {
     controls.push({
       icon: "fas fa-chart-simple",
@@ -82,6 +72,19 @@ Hooks.on("ready", () => {
       ],
       activeTool: "export",
     });
+  });
+
+  // HOOKS STUFF
+  Hooks.on("ready", () => {
+    ui.notifications.notify("PF2e Roll Stats Exist");
+    game.pf2eRollStats = {
+      exportRolls: function (name) {
+        exportRollsAsJSON(name);
+        game.user.unsetFlag("pf2e-roll-stats", "rolls");
+      },
+      setSession: setSession,
+      toggleLoggingStats: toggleLoggingStats,
+    };
   });
 
   Hooks.on("createChatMessage", async function (msg, _status, _id) {
