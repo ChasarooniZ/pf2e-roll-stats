@@ -6,7 +6,6 @@ Hooks.on("init", () => {
   Hooks.on("getSceneControlButtons", async (controls) => {
     controls.push({
       icon: "fas fa-chart-simple",
-      layer: "rollstats",
       name: "rollstats",
       title: `PF2e Roll Stats`,
       visible: game.user.isGM,
