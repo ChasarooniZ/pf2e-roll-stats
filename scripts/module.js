@@ -6,74 +6,66 @@ Hooks.on("init", () => {
   Hooks.on("getSceneControlButtons", async (controls) => {
     controls
       .find((con) => con.name == "token")
-      .tools.push({
-        icon: "fas fa-chart-simple",
-        layer: "tokens",
-        name: "rollstats",
-        title: `PF2e Roll Stats`,
-        visible: game.user.isGM,
-        tools: [
-          {
-            name: "export",
-            icon: "fas fa-file-export",
-            title: `Export Roll Stats`,
-            onClick: () => {
-              Dialog.confirm({
-                title: game.i18n.localize(
-                  "FXMASTER.ClearParticleAndFilterEffectsTitle"
-                ),
-                content: game.i18n.localize(
-                  "FXMASTER.ClearParticleAndFilterEffectsContent"
-                ),
-                yes: () => {
-                  ui.notifications.notify(
-                    "Roll data has been exported and deleted"
-                  );
-                  exportRollsAsJSON("Roll Stats");
-                  game.user.unsetFlag("pf2e-roll-stats", "rolls");
-                },
-                defaultYes: true,
-              });
-            },
-            button: true,
-            visible: true,
+      .tools.push(
+        {
+          name: "export",
+          icon: "fas fa-file-export",
+          title: `Export Roll Stats`,
+          onClick: () => {
+            Dialog.confirm({
+              title: game.i18n.localize(
+                "FXMASTER.ClearParticleAndFilterEffectsTitle"
+              ),
+              content: game.i18n.localize(
+                "FXMASTER.ClearParticleAndFilterEffectsContent"
+              ),
+              yes: () => {
+                ui.notifications.notify(
+                  "Roll data has been exported and deleted"
+                );
+                exportRollsAsJSON("Roll Stats");
+                game.user.unsetFlag("pf2e-roll-stats", "rolls");
+              },
+              defaultYes: true,
+            });
           },
-          {
-            name: "active",
-            icon: "fas fa-video",
-            title: `Record Roll Stats`,
-            toggle: true,
-            onClick: (toggled) => {
-              game.settings.set("pf2e-roll-stats", "log-stats", toggled);
-            },
-            button: true,
-            visible: true,
+          button: true,
+          visible: game.user.isGM,
+        },
+        {
+          name: "active",
+          icon: "fas fa-video",
+          title: `Record Roll Stats`,
+          toggle: true,
+          onClick: (toggled) => {
+            game.settings.set("pf2e-roll-stats", "log-stats", toggled);
           },
-          {
-            name: "delete",
-            icon: "fas fa-trash",
-            title: `Delete Roll Stats`,
-            onClick: () => {
-              Dialog.confirm({
-                title: game.i18n.localize(
-                  "FXMASTER.ClearParticleAndFilterEffectsTitle"
-                ),
-                content: game.i18n.localize(
-                  "FXMASTER.ClearParticleAndFilterEffectsContent"
-                ),
-                yes: () => {
-                  ui.notifications.notify("Roll data has been deleted");
-                  game.user.unsetFlag("pf2e-roll-stats", "rolls");
-                },
-                defaultYes: true,
-              });
-            },
-            button: true,
-            visible: true,
+          button: true,
+          visible: game.user.isGM,
+        },
+        {
+          name: "delete",
+          icon: "fas fa-trash",
+          title: `Delete Roll Stats`,
+          onClick: () => {
+            Dialog.confirm({
+              title: game.i18n.localize(
+                "FXMASTER.ClearParticleAndFilterEffectsTitle"
+              ),
+              content: game.i18n.localize(
+                "FXMASTER.ClearParticleAndFilterEffectsContent"
+              ),
+              yes: () => {
+                ui.notifications.notify("Roll data has been deleted");
+                game.user.unsetFlag("pf2e-roll-stats", "rolls");
+              },
+              defaultYes: true,
+            });
           },
-        ],
-        activeTool: "export",
-      });
+          button: true,
+          visible: game.user.isGM,
+        }
+      );
   });
 
   // HOOKS STUFF
