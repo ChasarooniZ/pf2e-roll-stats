@@ -10,20 +10,26 @@ Hooks.on("init", () => {
         {
           name: "export",
           icon: "fas fa-file-export",
-          title: `Export Roll Stats`,
+          title: game.i18n.localize("pf2e-roll-stats.controls.export.title"),
           onClick: () => {
             Dialog.confirm({
               title: game.i18n.localize(
-                "FXMASTER.ClearParticleAndFilterEffectsTitle"
+                "pf2e-roll-stats.controls.export.dialog.title"
               ),
               content: game.i18n.localize(
-                "FXMASTER.ClearParticleAndFilterEffectsContent"
+                "pf2e-roll-stats.controls.export.dialog.content"
               ),
               yes: () => {
                 ui.notifications.notify(
-                  "Roll data has been exported and deleted"
+                  game.i18n.localize(
+                    "pf2e-roll-stats.controls.export.dialog.notification"
+                  )
                 );
-                exportRollsAsJSON("Roll Stats");
+                exportRollsAsJSON(
+                  `${game.i18n.localize(
+                    "pf2e-roll-stats.controls.export.file-prefix"
+                  )} - ${new Date().toDateString()}`
+                );
                 game.user.unsetFlag("pf2e-roll-stats", "rolls");
               },
               defaultYes: true,
@@ -35,8 +41,9 @@ Hooks.on("init", () => {
         {
           name: "active",
           icon: "fas fa-video",
-          title: `Record Roll Stats`,
+          title: game.i18n.localize("pf2e-roll-stats.controls.record.title"),
           toggle: true,
+          active: game.settings.set("pf2e-roll-stats", "log-stats"),
           onClick: (toggled) => {
             game.settings.set("pf2e-roll-stats", "log-stats", toggled);
           },
@@ -46,17 +53,21 @@ Hooks.on("init", () => {
         {
           name: "delete",
           icon: "fas fa-trash",
-          title: `Delete Roll Stats`,
+          title: game.i18n.localize("pf2e-roll-stats.controls.delete.title"),
           onClick: () => {
             Dialog.confirm({
               title: game.i18n.localize(
-                "FXMASTER.ClearParticleAndFilterEffectsTitle"
+                "pf2e-roll-stats.controls.delete.dialog.title"
               ),
               content: game.i18n.localize(
-                "FXMASTER.ClearParticleAndFilterEffectsContent"
+                "pf2e-roll-stats.controls.delete.dialog.content"
               ),
               yes: () => {
-                ui.notifications.notify("Roll data has been deleted");
+                ui.notifications.notify(
+                  game.i18n.localize(
+                    "pf2e-roll-stats.controls.delete.dialog.notification"
+                  )
+                );
                 game.user.unsetFlag("pf2e-roll-stats", "rolls");
               },
               defaultYes: true,
@@ -225,6 +236,8 @@ export function toggleLoggingStats() {
 export function exportRollsAsJSON(name) {
   const data = {
     name: game.user.getFlag("pf2e-roll-stats", "session") || "",
+    date: new Date().toDateString(),
+    world: game.world.id,
     rolls: game.user.getFlag("pf2e-roll-stats", "rolls"),
   };
   saveDataToFile(JSON.stringify(data), "json", `${name}.json`);

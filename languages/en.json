@@ -10,6 +10,28 @@
                 "name": "Debug Mode",
                 "hint": "Have the console receive messages for different stuff"
             }
+        },
+        "controls": {
+            "export": {
+                "dialog": {
+                    "title": "Export Roll Stats",
+                    "content": "Export and delete roll statistics from this session?",
+                    "notification": "Roll data has been exported and deleted"
+                },
+                "title": "Export Roll Stats",
+                "file-prefix": "Roll Stats"
+            },
+            "record": {
+                "title": "Record Roll Stats"
+            },
+            "delete": {
+                "title": "Delete Roll Stats",
+                "dialog": {
+                    "title": "Delete Roll Stats",
+                    "content": "Delete roll statistics from this session?",
+                    "notification": "Roll data has been deleted"
+                }
+            }
         }
     }
 }
